@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 # bash script that facilitate deployment of webstatic
 
-if ! command -v nginx &> /dev/null
-then
-    apt-get upgrade
-    apt-get install nginx 
-fi
+apt-get -y update
+apt-get -y install nginx
 mkdir -p /data/web_static/releases/test/ /data/web_static/shared/
 echo "This is for testing" | sudo tee /data/web_static/releases/test/index.html
 ln -sf /data/web_static/releases/test/ /data/web_static/current
