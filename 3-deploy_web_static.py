@@ -1,56 +1,56 @@
 #!/usr/bin/python3
-""" distribute deployed """
+"""
+Fabric script that generates a .tgz archive from the contents
+of the web_static folder and deploys an archive to your web
+servers
+"""
+from fabric.api import local, run, put, env
+from datetime import datetime
+from os.path import isdir, isfile, basename
 
-from fabric.api import env, run, put
-import os
-env.hosts = ['34.232.69.130', '100.26.216.95']
-
-
-def do_deploy(archive_path):
-    """ a function that deploy our web static"""
-
-    if os.path.exists(archive_path):
-        try:
-            put(archive_path, "/tmp/")
-            os.path.basename(archive_path)
-            file = os.path.basename(archive_path)
-            filename = file.split(".")[0]
-            run("mkdir -p /data/web_static/releases/{}/".format(filename))
-            run("tar -xzf /tmp/{0} -C /data/web_static/releases/{1}/".format(file, filename))
-            run("rm -rf /tmp/{}".format(archive_path))
-            run('mv /data/web_static/releases/{0}/web_static/* /data/web_static/releases/{1}/'.format(filename, filename))
-            run('rm -rf /data/web_static/releases/{0}/web_static/'.format(filename))
-            run('rm -rf /data/web_static/current')
-            run("ln -s /data/web_static/releases/{} /data/web_static/current".format(filename))
-            return True
-        except Exception:
-            return False
-    else:
-        return False
+env.hosts = ['3.227.3.77', '3.235.226.255']
 
 
 def do_pack():
-    """ Function that compress a folder """
+    """ Creates a .tgz archive from web_static folder"""
+    string_date = datetime.now().strftime("%Y%m%d%H%M%S")
+    archive = "versions/web_static_{}.tgz".format(string_date)
+
     try:
-        if not os.path.exists("versions"):
-            local('mkdir versions')
-        t = datetime.now()
-        f = "%Y%m%d%H%M%S"
-        archive_path = 'versions/web_static_{}.tgz'.format(t.strftime(f))
-        local('tar -cvzf {} web_static'.format(archive_path))
-        return archive_path
-    except Exception:
+        if not isdir('versions'):
+            local("mkdir versions")
+        local("tar -cvzf {} web_static".format(archive))
+        return archive
+    except:
         return None
 
 
-def deploy():
-    """ a function that deploy """
+def do_deploy(archive_path):
+    """distributes an archive to your web servers"""
+    if not isfile(archive_path):
+        return False
+    filename = basename(archive_path)
 
     try:
-        pack = do_pack()
-        if pack is None:
-            return False
-        dep = do_deploy(pack)
-        return dep
-    except Exception:
+        no_ext = filename.split(".")[0]
+        put(archive_path, "/tmp/")
+        extract_path = "/data/web_static/releases/{}".format(no_ext)
+        run("mkdir -p {}".format(extract_path))
+        run("tar xzf /tmp/{} -C {}".format(filename, extract_path))
+        run("rm /tmp/{}".format(filename))
+        run("mv {0}/web_static/* {0}/".format(extract_path))
+        run("rm -rf {0}/web_static/".format(extract_path))
+        run("rm -rf /data/web_static/current")
+        run("ln -s {} /data/web_static/current".format(extract_path))
+        return True
+    except:
         return False
+
+
+def deploy():
+    """creates and distributes an archive to your web servers"""
+    archive_path = do_pack()
+    if archive_path is None:
+        return False
+    has_deployed = do_deploy(archive_path)
+    return has_deployed
