@@ -1,11 +1,7 @@
 #!/usr/bin/python3
-"""
-This module contains the Amenity Class
-"""
+""" State Module for HBNB project """
 from models.base_model import BaseModel
 
 
 class Amenity(BaseModel):
-    """Class for the Amenity model"""
-
     name = ""
