@@ -67,37 +67,33 @@ class HBNBCommand(cmd.Cmd):
     do_EOF = do_quit
     help_EOF = help_quit
 
-    def do_create(self, arg):
-        """A method that creates an instance of a class."""
-        if not arg:
-            print("** class name missing **")
-        elif arg in self.valid_classes:
-            x = self.valid_classes[arg]
-            y = x()
-            y.save()
-            print(y.id)
-        else:
-            print("** class doesn't exist **")
+    def do_create(self, args):
+        """ Create an object of any class"""
 
-    def help_create(self):
-        """A method that allows users to get documentation on create."""
-        print("A command that creates an instance of a class")
-
-    def do_show(self, arg):
-        """A method that shows instance information."""
-        args = shlex.split(arg)
+        args = args.split()
         if not args:
             print("** class name missing **")
-        elif args[0] in self.valid_classes:
-            if len(args) < 2:
-                print("** instance id missing **")
-            elif "{}.{}".format(args[0], args[1]) in HBNBCommand.objects_dict:
-                print(HBNBCommand.objects_dict["{}.{}".format(args[0],
-                                                              args[1])])
-            else:
-                print("** no instance found **")
-        else:
+            return
+        elif args[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
+            return
+        new_instance = HBNBCommand.classes[args[0]]()
+        dic = {}
+
+        for i in range(1, len(args)):
+            dic[args[i].split("=")[0]] = args[i].split("=")[1]
+        for key, value in dic.items():
+            if '\"' in value:
+                value = value[1:-1]
+                value = value.replace("_", " ")
+            elif '.' in value:
+                value = float(value)
+            else:
+                value = int(value)
+            setattr(new_instance, key, value)
+        storage.save()
+        print(new_instance.id)
+        storage.save()
 
     def help_show(self):
         """A method that allows users to get documentation on show."""
