@@ -7,31 +7,37 @@ from flask import Flask
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
+
 @app.route('/')
 def hello():
-    # Return Hello HBNB 
+    # Return Hello HBNB
     return 'Hello HBNB!'
+
 
 @app.route('/hbnb')
 def HBHB():
     # Return HBNB
     return 'HBNB'
 
-@app.route('/c/<string:text>')                                                     
+
+@app.route('/c/<string:text>')
 def C(text):
-    # Return C + text                                        
+    # Return C + text
     return 'C {}'.format(text.replace("_", " "))
 
+
 @app.route('/python/')
-@app.route('/python/<string:text>')                                                     
-def python(text= 'is cool'):     
-    # Return Python + text                                     
+@app.route('/python/<string:text>')
+def python(text='is cool'):
+    # Return Python + text
     return 'Python {}'.format(text.replace("_", " "))
+
 
 @app.route('/number/<int:n>/')
 def number(n):
     # Return number
     return '{} is a number'.format(n)
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
