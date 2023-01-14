@@ -78,3 +78,6 @@ class FileStorage:
                     'Review': Review
                   }
             del self.__objects[obj.to_dict()['__class__'] + '.' + obj.id]
+    def close(self):
+        """ method deserialize json object """
+        self.reload()
