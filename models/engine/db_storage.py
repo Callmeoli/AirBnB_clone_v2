@@ -11,6 +11,9 @@ from models.state import State
 from models.user import User
 from models.amenity import Amenity
 
+classes = {"Amenity": Amenity, "City": City,
+           "Place": Place, "Review": Review, "State": State, "User": User}
+
 class DBStorage:
     """ data base storage engine """
 
@@ -66,3 +69,6 @@ class DBStorage:
         Base.metadata.create_all(self.__engine) 
         scoop = sessionmaker(bind=self.__engine, expire_on_commit=False)
         self.__session = scoped_session(scoop)
+    def close(self):
+        """ method to retrive from the db storage """
+        self.__session.remove()
