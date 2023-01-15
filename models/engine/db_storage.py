@@ -14,6 +14,7 @@ from models.amenity import Amenity
 classes = {"Amenity": Amenity, "City": City,
            "Place": Place, "Review": Review, "State": State, "User": User}
 
+
 class DBStorage:
     """ data base storage engine """
 
@@ -21,7 +22,7 @@ class DBStorage:
     __session = None
 
     def __init__(self):
-        
+
         self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
                                       format(getenv("HBNB_MYSQL_USER"),
                                              getenv("HBNB_MYSQL_PWD"),
@@ -30,7 +31,7 @@ class DBStorage:
                                       pool_pre_ping=True)
         if getenv("HBNB_ENV") == 'test':
             Base.metadata.drop_all(self.__engine)
-    
+
     def all(self, cls=None):
         """returns a dictionary
         Return:
@@ -42,7 +43,7 @@ class DBStorage:
             for obj in all_cls:
                 objs_list.extend(self.__session.query(obj).all())
         else:
-            if type(cls) == str:
+            if isinstance(cls, str):
                 cls = classes[cls]
             elif cls not in classes.values():
                 return
@@ -55,7 +56,7 @@ class DBStorage:
     def new(self, obj):
         """Adds new object to the table"""
         self.__session.add(obj)
-    
+
     def save(self):
         """ commit all the changes """
         self.__session.commit()
@@ -64,11 +65,13 @@ class DBStorage:
         """ delete from the current databsae session"""
         if obj is not None:
             self.__session.delete(obj)
+
     def reload(self):
         """Load for database """
-        Base.metadata.create_all(self.__engine) 
+        Base.metadata.create_all(self.__engine)
         scoop = sessionmaker(bind=self.__engine, expire_on_commit=False)
         self.__session = scoped_session(scoop)
+
     def close(self):
         """ method to retrive from the db storage """
         self.__session.remove()
