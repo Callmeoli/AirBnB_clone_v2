@@ -4,6 +4,7 @@ Script that starts a Flask web application
 /states_list: display a HTML page: (inside the tag BODY) 
 """
 from flask import Flask, render_template
+from models import *
 from models import storage, State
 
 app = Flask(__name__)
