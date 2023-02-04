@@ -18,10 +18,10 @@ def Hbnb():
     return 'HBNB'
 
 
-@app.route('/c/<text>', strict_slashes=False)
+@app.route('/c/<string:text>', strict_slashes=False)
 def C(text):
     """ return C followed by the value of text"""
-    return "C {}".format(text)
+    return "C {}".format(text.replace("_", " "))
 
 
 if __name__ == '__main__':
